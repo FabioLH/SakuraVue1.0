@@ -11,7 +11,7 @@
             <div class="div2">
                 <img class="searchicon" src="/img/searchicon.png" alt=""
                 @click="showSearch">
-                <router-link to="/">
+                <router-link to="/login">
                     <img class="user" src="/img/user.png" alt="">
                 </router-link>
                 <router-link to="/favoritos">

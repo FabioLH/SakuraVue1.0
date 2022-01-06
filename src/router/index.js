@@ -22,6 +22,16 @@ const routes = [
     ],
   },
   { path: "/cards/:cardId", name: "AnimeDetail", component: AnimeDetail },
+  {
+    path: "/login",
+    name: "Login",
+    component: () => import("../views/Login.vue"),
+  },
+  {
+    path: "/cadastro",
+    name: "Cadastro",
+    component: () => import("../views/Signup.vue"),
+  },
 ];
 
 const router = createRouter({

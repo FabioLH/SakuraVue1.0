@@ -26,48 +26,78 @@
           <option> 10 - Épico </option>
         </select>
         <button class="button">Add aos Favoritos</button>
-        <button class="button" @click="showDetail">Trailer</button>
+        <button class="button" @click="showModal">Trailer</button>
         <button class="button">Onde assistir</button>
         </div>
 
         </div>
 
         </div>
-
-        <div class="divideo" v-show="collapsed">
-        <iframe id="player" class="vid" :src="detail.vid" frameborder="0"
-        allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen></iframe>
-        </div>
-
       </div>
+      <Video v-show="collapsed" @click="showModal"/>
     </div>
 </template>
 
 <script>
-import { useRoute } from "vue-router";
-import { ref, computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { ref, computed, watch } from "vue";
 import useCards from "@/modules/cards";
+import Video from "@/components/Video.vue";
+import useAuth from "@/modules/auth";
 
 export default {
   name: "AnimeDetail",
+  components: {
+    Video,
+  },
   setup() {
     const route = useRoute();
     const cards = useCards();
+
     const detail = computed((
     ) => cards.state.animelist.find((card) => card.id === Math.floor(route.params.cardId)));
+
     const status = computed(() => cards.state.status);
+    const router = useRouter();
+    const auth = useAuth();
+
+    auth.loadData();
+
+    watch(
+      () => auth.state.token,
+      () => {
+        if (auth.state.token) {
+          router.push({ name: "Home" });
+        } else {
+          router.push({ name: "Login" });
+        }
+      },
+    );
+
+    if (!auth.state.token) {
+      router.push({ name: "Login" });
+    }
+
+    const ionViewWillLeave = () => {
+      const listaFrames = document.getElementsByTagName("iframe");
+      for (let index = 0; index < listaFrames.length; index += 1) {
+        const iframe = listaFrames[index].contentWindow;
+        iframe.postMessage('{"event":"command","func":"stopVideo","args":""}', "*");
+      }
+    };
 
     const collapsed = ref(false);
-    const showDetail = () => {
+    const showModal = () => {
       collapsed.value = !collapsed.value;
+      ionViewWillLeave();
     };
 
     return {
       detail,
       status,
       collapsed,
-      showDetail,
+      showModal,
+      ionViewWillLeave,
     };
   },
 };
@@ -128,8 +158,9 @@ export default {
   align-items: center;
   border-radius: 5px;
   font-size: 1rem;
+  height: 25px;
   display: flex;
-  border: 1px solid #ece8e8;
+  border: 1px solid #858585;
   background-color: white;
   color: black;
   font-family: sans-serif;
@@ -139,6 +170,7 @@ export default {
   background-color: #313131;
   color: white;
   box-shadow: 0px 0px 3px 0px #c5c5c5;
+  border: 1px solid #ffffff;
 }
 .details {
     display: flex;
@@ -179,9 +211,12 @@ export default {
 .select-status {
   display: flex;
   outline: none;
+  border: 1px solid #858585;
   align-content: center;
   text-align: center;
   border-radius: 5px;
+  font-size: 1rem;
+  height: 25px;
   cursor: pointer;
 }
 @media only screen and (max-width: 650px) {

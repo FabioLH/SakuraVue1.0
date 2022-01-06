@@ -9,6 +9,7 @@
 </template>
 
 <script>
+// import { useRouter } from "vue-router"; //
 import Header from "./components/Header.vue";
 
 export default {
@@ -16,9 +17,10 @@ export default {
   components: {
     Header,
   },
-  data() {
-    return {
-    };
+  setup() {
+    // const router = useRouter(); //
+    // router.push({ name: "Login" }); //
+    return {};
   },
 };
 </script>
